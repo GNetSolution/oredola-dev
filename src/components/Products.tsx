@@ -1,82 +1,43 @@
 "use client";
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-
+import { motion } from "framer-motion";
+import { useTheme, THEMES } from "@/components/ThemeProvider";
 const PRODUCTS = [
-  { id:1, cat: "LEARN", name: "AcademiaBase", desc: "AI research hub for students. Find papers, summarize, cite. Built for my 1000+ students.", users: "2.3k", tag: "For Students", color: "#06b6d4", status: "live", year: "2024" },
-  { id:2, cat: "LEARN", name: "ExamAI", desc: "JAMB/WAEC past questions + AI tutor that actually teaches, not dumps answers.", users: "3.1k", tag: "For Students", color: "#10b981", status: "live", year: "2024" },
-  { id:3, cat: "LEARN", name: "LearnVault", desc: "My second brain for mentoring. Notes → flashcards → AI quiz. My teaching OS.", users: "1.8k", tag: "For Learners", color: "#8b5cf6", status: "live", year: "2023" },
-  { id:4, cat: "SHIP", name: "ShipFast NG", desc: "Next.js boilerplate I use daily. Supabase + Paystack + SEO. Ship in 48h.", users: "420", tag: "For Builders", color: "#3b82f6", status: "live", year: "2024" },
-  { id:5, cat: "SHIP", name: "TutorOS", desc: "Run tutoring as a business. Scheduling, payments, students. How I scaled to 1000+.", users: "310", tag: "For Mentors", color: "#6366f1", status: "beta", year: "2025" },
-  { id:6, cat: "EARN", name: "RankEngine", desc: "SEO toolkit for .ng domains. Keyword audit, content AI. From ranking my own products.", users: "890", tag: "For Founders", color: "#f97316", status: "live", year: "2024" },
-  { id:7, cat: "EARN", name: "NaijaSEO Kit", desc: "My exact 30-day ranking checklist. Templates + keywords + content system.", users: "560", tag: "For Founders", color: "#eab308", status: "live", year: "2023" },
-  { id:8, cat: "EARN", name: "StudentPay", desc: "Accept Naira + Crypto. 1% fee. Built because PayPal blocks Nigeria.", users: "1.2k", tag: "For Freelancers", color: "#ec4899", status: "building", year: "2025" },
+  { name: "AcademiaBase", desc: "AI-powered research hub for African students. Find papers, cite, summarize.", users: "2.3k", tag: "AI + EDU", color: "#06b6d4", status: "live" as const },
+  { name: "LearnVault", desc: "Your second brain for learning. Notes, flashcards, AI quizzes.", users: "1.8k", tag: "Learning OS", color: "#8b5cf6", status: "live" as const },
+  { name: "RankEngine", desc: "SEO toolkit that ranks.ng domains. Keywords, audit, content AI.", users: "890", tag: "SEO SaaS", color: "#f97316", status: "live" as const },
+  { name: "ExamAI", desc: "JAMB/WAEC past questions with AI tutor. 10k+ questions.", users: "3.1k", tag: "AI Tutor", color: "#10b981", status: "beta" as const },
+  { name: "NaijaSEO Kit", desc: "Templates + checklist to rank on Google Nigeria in 30 days.", users: "560", tag: "SEO", color: "#eab308", status: "live" as const },
+  { name: "StudentPay", desc: "Accept crypto & Naira for student services. 1% fee.", users: "1.2k", tag: "Fintech", color: "#ec4899", status: "building" as const },
+  { name: "ShipFast NG", desc: "Next.js boilerplate with Paystack, Supabase, SEO baked in.", users: "420", tag: "Boilerplate", color: "#3b82f6", status: "live" as const },
+  { name: "TutorOS", desc: "Run your own tutoring business. Scheduling, payments, students.", users: "310", tag: "SaaS", color: "#6366f1", status: "beta" as const },
 ];
-
-const FILTERS = ["All", "LEARN", "SHIP", "EARN"] as const;
-
 export default function Products() {
-  const [active, setActive] = useState<typeof FILTERS[number]>("All");
-  const filtered = active==="All" ? PRODUCTS : PRODUCTS.filter(p=>p.cat===active);
-
+  const { theme } = useTheme();
+  const t = THEMES[theme];
+  const isLight = theme === "light";
   return (
-    <section id="products" className="relative mx-auto max-w-[1280px] px-6 md:px-8 py-24 border-t" style={{ borderColor: "var(--border)", background: "var(--bg)" }}>
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+    <section id="products" className="mx-auto max-w- px-6 md:px-8 py-24 border-t" style={{ borderColor: t.border, background: t.bg }}>
+      <div className="flex items-end justify-between mb-12">
         <div>
-          <h2 className="text-[34px] md:text-[48px] font-[800] tracking-[-0.04em] leading-[0.95]">Product Factory</h2>
-          <p className="mt-3 text-[13.5px] opacity-50 max-w-[52ch]">8 products shipped across LEARN → SHIP → EARN. Built in Lagos, used by 1000+ builders globally. Navy = default focus mode.</p>
-        </div>
-        <div className="flex items-center gap-1 rounded-full border p-1 self-start md:self-auto" style={{ borderColor: "var(--border)", background: "var(--card)" }}>
-          {FILTERS.map(f=>(
-            <button key={f} onClick={()=>setActive(f)} className={`rounded-full px-4 py-1.5 text-[12px] font-medium transition ${active===f ? "bg-[var(--fg)] text-[var(--bg)]" : "opacity-50 hover:opacity-80"}`}>{f}</button>
-          ))}
+          <div className="inline-flex rounded-full border px-3 py-1 text-" style={{ borderColor: t.border, background: t.card, color: isLight? "rgba(0,0,0,0.5)" : "rgba(255,255,255,0.5)" }}>PRODUCT FACTORY — 8 SHIPPED</div>
+          <h2 className="mt-4 text- md:text- font-black tracking-[-0.04em] leading-[0.9]" style={{ color: t.fg }}>Products that<br/><span style={{ color: isLight? "rgba(0,0,0,0.3)" : "rgba(255,255,255,0.2)" }}>students actually use</span></h2>
         </div>
       </div>
-
-      {/* FIXED: 2-col even grid, not 12-col mess */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <AnimatePresence mode="popLayout">
-          {filtered.map((p,i)=>(
-            <motion.div
-              key={p.id}
-              layout
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.96 }}
-              transition={{ duration: 0.25, delay: i*0.02 }}
-              whileHover={{ y: -4 }}
-              className="group relative rounded-[22px] border p-6 flex flex-col justify-between min-h-[200px] transition-all"
-              style={{ borderColor: "var(--border)", background: "var(--card)" }}
-            >
-              <div className="absolute inset-0 rounded-[22px] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" style={{ background: `radial-gradient(500px at 0% 0%, ${p.color}12, transparent 70%)` }} />
-              
-              <div className="relative">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-full grid place-items-center text-[13px] font-bold border" style={{ backgroundColor: `${p.color}14`, borderColor: `${p.color}30`, color: p.color }}>{p.name[0]}</div>
-                    <div>
-                      <h3 className="text-[16px] font-semibold tracking-tight leading-none">{p.name}</h3>
-                      <div className="mt-1.5 flex items-center gap-2 text-[10px] font-mono opacity-40"><span>{p.cat}</span><span>•</span><span>{p.year}</span><span>•</span><span>{p.users} users</span></div>
-                    </div>
-                  </div>
-                  <div className={`h-2.5 w-2.5 rounded-full ${p.status==="live" ? "bg-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.6)]" : p.status==="beta" ? "bg-amber-400" : "opacity-30 bg-[var(--fg)]"}`} />
-                </div>
-
-                <p className="mt-5 text-[13.5px] leading-[1.6] opacity-60 line-clamp-3">{p.desc}</p>
-              </div>
-
-              <div className="relative mt-6 flex items-center justify-between">
-                <span className="rounded-full border px-3 py-1 text-[11px] opacity-60" style={{ borderColor: "var(--border)", background: "color-mix(in srgb, var(--bg) 60%, transparent)" }}>{p.tag}</span>
-                <span className="text-[13px] opacity-20 group-hover:opacity-60 group-hover:translate-x-0.5 transition-all">↗</span>
-              </div>
-            </motion.div>
-          ))}
-        </AnimatePresence>
-      </div>
-
-      <div className="mt-8 flex items-center justify-between rounded-full border px-5 py-2.5 text-[11px] font-mono opacity-40" style={{ borderColor: "var(--border)", background: "var(--card)" }}>
-        <span>8 products • {active} • {filtered.length} showing • even 2-col bento</span>
-        <span className="hidden md:inline">navy default • light = paper • hover lift</span>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {PRODUCTS.map((p, i) => (
+          <motion.div key={p.name} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i*0.05 }} className="group relative rounded- border p-5 hover:-translate-y-1 transition-all duration-300" style={{ borderColor: t.border, background: t.card }}>
+            <div className="flex items-center justify-between mb-4">
+              <div className="h-8 w-8 rounded-full grid place-items-center text- font-bold" style={{ background: `${p.color}15`, border: `1px solid ${p.color}30`, color: p.color }}>{p.name[0]}</div>
+              <span className={`h-2 w-2 rounded-full ${p.status==="live"?"bg-emerald-400":p.status==="beta"?"bg-yellow-400":"bg-gray-400"}`} />
+            </div>
+            <h3 className="text- font-semibold tracking-tight" style={{ color: t.fg }}>{p.name}</h3>
+            <p className="mt-2 text- leading-[1.5] line-clamp-2" style={{ color: isLight? "rgba(0,0,0,0.55)" : "rgba(255,255,255,0.4)" }}>{p.desc}</p>
+            <div className="mt-6 flex items-center justify-between">
+              <span className="rounded-full border px-2.5 py-1 text- font-mono" style={{ borderColor: t.border, background: isLight? "rgba(0,0,0,0.04)" : "rgba(255,255,255,0.06)", color: isLight? "rgba(0,0,0,0.5)" : "rgba(255,255,255,0.4)" }}>{p.tag}</span>
+              <span className="text- font-mono" style={{ color: isLight? "rgba(0,0,0,0.35)" : "rgba(255,255,255,0.2)" }}>{p.users} users</span>
+            </div>
+          </motion.div>
+        ))}
       </div>
     </section>
   );
