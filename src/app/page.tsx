@@ -1,7 +1,6 @@
 export const dynamic = 'force-dynamic'
 
 import Link from "next/link"
-import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import Products from "@/components/Products";
 import Services from "@/components/Services";
@@ -15,7 +14,6 @@ export default function Page(){
       </div>
 
       <div className="relative z-10">
-        <Navbar/>
         <Hero/>
         <Products/>
         <Services/>
