@@ -1,0 +1,9 @@
+@import "tailwindcss";
+* { font-feature-settings: "ss01" on, "cv01" on; }
+html { scroll-behavior: smooth; }
+body {
+  background: #05070a;
+  color: white;
+  font-family: Inter, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
