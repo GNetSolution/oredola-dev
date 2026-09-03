@@ -1,104 +1,71 @@
 "use client";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useTheme, THEMES } from "@/components/ThemeProvider";
 
-const PIPELINE = [
-  { step: "01", name: "Next.js 14", role: "Frontend • RSC • Edge", status: "active", metric: "95%", bar: 95 },
-  { step: "02", name: "Supabase", role: "Auth • DB • Realtime", status: "active", metric: "90%", bar: 90 },
-  { step: "03", name: "OpenAI SDK", role: "Agents • Tools • RAG", status: "building", metric: "88%", bar: 88 },
-  { step: "04", name: "SEO Engine", role: "Rank.ng • Schema • Sitemap", status: "live", metric: "92%", bar: 92 },
-  { step: "05", name: "Framer", role: "Motion • Gesture • 3D", status: "active", metric: "94%", bar: 94 },
-  { step: "06", name: "Paystack", role: "Payments • Webhooks", status: "live", metric: "85%", bar: 85 },
+const STACK = [
+  { id: "next", name: "Next.js 14", role: "Frontend • RSC • Edge", level: 95, icon: "N", snippet: "app/api/ship/route.ts → edge runtime, 12ms cold start", code: "export const runtime = 'edge'\nexport async function POST(req) {\n const { idea } = await req.json()\n return ship(idea) // → live in 3m\n}", metric: "2.3k builds / mo" },
+  { id: "supabase", name: "Supabase", role: "Auth • DB • Realtime", level: 90, icon: "S", snippet: "auth + db + realtime • RLS secured", code: "const { data } = await supabase\n.from('products')\n.select('*')\n.eq('status', 'live') // RLS", metric: "8 dbs • 99.9% uptime" },
+  { id: "openai", name: "OpenAI SDK", role: "Agents • Tools • RAG", level: 88, icon: "◍", snippet: "AI that teaches — not just chats", code: "const tutor = new Agent({\n tools: [searchDocs, gradeCode],\n model: 'gpt-4o'\n}) // AcademiaBase", metric: "12k tokens / day" },
+  { id: "seo", name: "SEO Systems", role: "Rank.ng • Schema • Sitemap", level: 92, icon: "R", snippet: "Programmatic SEO that ranks", code: "generateSitemap(1000)\n.addSchema('Course')\n.pingGoogle() // → #1 for 'JAMB past questions'", metric: "142 pages indexed" },
+  { id: "framer", name: "Framer Motion", role: "Motion • Gesture • 3D", level: 94, icon: "F", snippet: "Pro UI that feels native", code: "<motion.div\n whileHover={{ scale: 1.02 }}\n transition={{ spring: 20 }}\n/> // 60fps", metric: "60fps • spring physics" },
+  { id: "paystack", name: "Paystack", role: "Checkout • Split • Webhooks", level: 85, icon: "P", snippet: "Get paid in Nigeria — instantly", code: "paystack.checkout({\n amount: 500000, // ₦5k\n split: { gnet: 70, tutor: 30 }\n})", metric: "₦420k MRR" },
 ];
 
 export default function StackAndContact() {
   const { theme } = useTheme();
   const t = THEMES[theme];
   const isLight = theme === "light";
-  const [time, setTime] = useState("");
   const [active, setActive] = useState(0);
-  useEffect(() => {
-    const tick = () => setTime(new Date().toLocaleTimeString("en-NG", { timeZone: "Africa/Lagos", hour: "2-digit", minute: "2-digit" }) + " WAT");
-    tick(); const i = setInterval(tick, 1000); return () => clearInterval(i);
-  }, []);
+  const [copied, setCopied] = useState(false);
+  const [time, setTime] = useState("");
+  useEffect(() => { const tick = () => setTime(new Date().toLocaleTimeString("en-NG", { timeZone: "Africa/Lagos", hour: "2-digit", minute: "2-digit" })); tick(); const id = setInterval(tick, 1000); return () => clearInterval(id); }, []);
+  useEffect(() => { const id = setInterval(() => setActive((p) => (p + 1) % STACK.length), 4000); return () => clearInterval(id); }, []);
+  const current = STACK[active];
   return (
-    <section id="stack" className="relative mx-auto max-w- px-6 md:px-10 py-24 border-t" style={{ borderColor: t.border, background: t.bg }}>
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-14">
-        <div>
-          <div className="inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 text- font-medium" style={{ borderColor: t.border, background: t.card, color: isLight? "rgba(0,0,0,0.6)" : "rgba(255,255,255,0.6)" }}>
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" /> HOW I SHIP — DAILY PIPELINE
+    <section id="stack" className="relative mx-auto max-w- px-6 md:px-10 py-24 md:py-32 border-t overflow-hidden" style={{ borderColor: t.border, background: t.bg }}>
+      <div className="pointer-events-none absolute inset-0 opacity-[0.03]" style={{ backgroundImage: `linear-gradient(${t.fg} 1px, transparent 1px), linear-gradient(90deg, ${t.fg} 1px, transparent 1px)`, backgroundSize: "28px 28px" }} />
+      <div className="relative">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
+          <div>
+            <motion.div initial={{ opacity: 0, y: 8 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="inline-flex items-center gap-2 rounded-full border backdrop-blur px-3.5 py-1.5 text- font-medium tracking-wide" style={{ borderColor: t.border, background: isLight? "rgba(255,255,255,0.8)" : "rgba(0,0,0,0.3)", color: isLight? "rgba(0,0,0,0.65)" : "rgba(255,255,255,0.6)" }}>
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" /> HOW I SHIP — PRODUCTION STACK
+              <span className="ml-2 rounded-full px-2 py-0.5 text- font-bold" style={{ background: isLight? "#000" : "#fff", color: isLight? "#fff" : "#000" }}>8 SHIPPED</span>
+            </motion.div>
+            <h2 className="mt-6 text- md:text- font-black tracking-[-0.06em] leading-[0.85]"><span style={{ color: t.fg }}>Modern stack.</span><br /><span style={{ color: isLight? "rgba(0,0,0,0.18)" : "rgba(255,255,255,0.2)" }}>Proven daily.</span></h2>
           </div>
-          <h2 className="mt-6 text- md:text- font-black tracking-[-0.06em] leading-[0.85]" style={{ color: t.fg }}>
-            Ship fast.<br />
-            <span style={{ color: isLight? "rgba(0,0,0,0.15)" : "rgba(255,255,255,0.18)" }}>Stay live.</span>
-          </h2>
+          <div className="max-w-">
+            <div className="flex items-center gap-2 text- font-mono" style={{ color: isLight? "rgba(0,0,0,0.4)" : "rgba(255,255,255,0.35)" }}><span className="h-1 w-1 rounded-full bg-emerald-500" /> LAGOS • {time} WAT • {theme.toUpperCase()} THEME • LIVE</div>
+            <p className="mt-3 text- leading-[1.65]" style={{ color: isLight? "rgba(0,0,0,0.55)" : "rgba(255,255,255,0.5)" }}>Not a tutorial list. This is the exact pipeline powering <span style={{ color: t.fg, fontWeight: 600 }}>AcademiaBase (2.3k users), RankEngine, StudentPay</span> — live, monetized, and ranking.</p>
+          </div>
         </div>
-        <div className="md:text-right">
-          <div className="text- font-mono tracking-widest" style={{ color: isLight? "rgba(0,0,0,0.35)" : "rgba(255,255,255,0.35)" }}>LAGOS — {time}</div>
-          <div className="mt-2 text- max-w- leading-[1.6]" style={{ color: isLight? "rgba(0,0,0,0.55)" : "rgba(255,255,255,0.45)" }}>8 products • 1000+ builders mentored • 99.9% uptime. This is the actual stack I use daily.</div>
-        </div>
-      </div>
-      <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_0.85fr] gap-6">
-        <div className="relative rounded- border overflow-hidden" style={{ background: "#0a0a0a", borderColor: isLight? "#0a0a0a" : t.border }}>
-          <div className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: "rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.02)" }}>
-            <div className="flex items-center gap-2">
-              <div className="h-2.5 w-2.5 rounded-full bg-[#ff5f57]" />
-              <div className="h-2.5 w-2.5 rounded-full bg-[#ffbd2e]" />
-              <div className="h-2.5 w-2.5 rounded-full bg-[#28ca42]" />
-              <div className="ml-4 text- font-mono text-white/40">pipeline.config.ts — production</div>
+        <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_0.85fr] gap-5">
+          <div className="relative rounded- border backdrop-blur-2xl overflow-hidden min-h- flex flex-col" style={{ background: isLight? "#ffffff" : "rgba(0,0,0,0.5)", borderColor: t.border, boxShadow: isLight? "0 24px 80px -20px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.03) inset" : "0 24px 80px -20px rgba(0,0,0,0.7)" }}>
+            <div className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: t.border, background: isLight? "rgba(0,0,0,0.02)" : "rgba(255,255,255,0.02)" }}>
+              <div className="flex items-center gap-2.5"><div className="flex gap-1.5"><div className="h-3 w-3 rounded-full bg-[#ff5f57]" /><div className="h-3 w-3 rounded-full bg-[#ffbd2e]" /><div className="h-3 w-3 rounded-full bg-[#28ca42]" /></div><div className="ml-3 font-mono text-" style={{ color: isLight? "rgba(0,0,0,0.45)" : "rgba(255,255,255,0.4)" }}>{current.id}.ts — {current.snippet}</div></div>
+              <div className="flex items-center gap-3"><div className="text- font-mono px-2 py-1 rounded-full border" style={{ borderColor: t.border, color: isLight? "rgba(0,0,0,0.4)" : "rgba(255,255,255,0.35)", background: isLight? "rgba(0,0,0,0.03)" : "rgba(255,255,255,0.04)" }}>{current.metric}</div><div className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" /></div>
             </div>
-            <div className="flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" /><span className="text- font-mono text-white/50">LIVE</span></div>
+            <div className="relative flex-1 p-6 md:p-8">
+              <div className="flex gap-6">
+                <div className="hidden md:block font-mono text- leading-6 select-none" style={{ color: isLight? "rgba(0,0,0,0.2)" : "rgba(255,255,255,0.18)" }}>{current.code.split('\n').map((_, i) => <div key={i}>{String(i+1).padStart(2,'0')}</div>)}</div>
+                <div className="flex-1"><AnimatePresence mode="wait"><motion.pre key={active} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.25 }} className="font-mono text-[12.5px] leading-[1.7] whitespace-pre-wrap" style={{ color: t.fg }}><code>{current.code}</code></motion.pre></AnimatePresence><div className="mt-8 flex items-center gap-3"><motion.button whileTap={{ scale: 0.98 }} onClick={() => { navigator.clipboard.writeText(current.code); setCopied(true); setTimeout(()=>setCopied(false), 1500); }} className="rounded-full px-4 py-2 text- font-medium border transition" style={{ background: isLight? "#0a0a0a" : "#ffffff", color: isLight? "#ffffff" : "#000000", borderColor: isLight? "#0a0a0a" : "#ffffff" }}>{copied? "Copied ✓" : "Copy snippet"}</motion.button><div className="text- font-mono" style={{ color: isLight? "rgba(0,0,0,0.4)" : "rgba(255,255,255,0.35)" }}>→ Used in {current.name} • {current.level}% mastery</div></div></div>
+              </div>
+              <div className="absolute bottom-0 left-0 right-0 border-t px-6 py-3 flex items-center justify-between font-mono text-" style={{ borderColor: t.border, background: isLight? "rgba(0,0,0,0.02)" : "rgba(0,0,0,0.25)" }}><div className="flex gap-4"><span style={{ color: isLight? "rgba(0,0,0,0.35)" : "rgba(255,255,255,0.25)" }}>$ pnpm ship</span><span className="text-emerald-500">✓ {current.name} live</span><span style={{ color: isLight? "rgba(0,0,0,0.35)" : "rgba(255,255,255,0.25)" }}>{time}</span></div><div className="hidden md:flex gap-2"><span className="px-2 py-0.5 rounded-full text- border" style={{ borderColor: t.border, color: isLight? "rgba(0,0,0,0.4)" : "rgba(255,255,255,0.3)" }}>8 PRODUCTS</span><span className="px-2 py-0.5 rounded-full text- border" style={{ borderColor: t.border, color: isLight? "rgba(0,0,0,0.4)" : "rgba(255,255,255,0.3)" }}>1000+ USERS</span></div></div>
+            </div>
           </div>
-          <div className="p-2">
-            {PIPELINE.map((p, i) => (
-              <button key={p.name} onClick={() => setActive(i)} className="w-full text-left rounded- px-5 py-4 flex items-center justify-between transition-all duration-200" style={{ background: active===i? "rgba(255,255,255,0.07)" : "transparent", border: `1px solid ${active===i? "rgba(255,255,255,0.12)" : "transparent"}` }}>
-                <div className="flex items-center gap-4">
-                  <div className="font-mono text- w-6" style={{ color: active===i? "#fff" : "rgba(255,255,255,0.25)" }}>{p.step}</div>
-                  <div>
-                    <div className="flex items-center gap-2.5">
-                      <div className="text-[13.5px] font-semibold" style={{ color: active===i? "#fff" : "rgba(255,255,255,0.85)" }}>{p.name}</div>
-                      <div className={`h-1 w-1 rounded-full ${p.status==="active"? "bg-emerald-400" : p.status==="live"? "bg-blue-400" : "bg-yellow-400"}`} />
-                      <div className="text- font-mono" style={{ color: "rgba(255,255,255,0.35)" }}>{p.status}</div>
-                    </div>
-                    <div className="text- font-mono mt-1" style={{ color: "rgba(255,255,255,0.35)" }}>{p.role}</div>
+          <div className="grid grid-cols-1 gap-3">
+            {STACK.map((s, i) => { const isActive = active===i; return (
+              <motion.button key={s.id} onClick={() => setActive(i)} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i*0.04 }} viewport={{ once: true }} className="text-left rounded- border p- group" style={{ background: isActive? t.fg : t.border }}>
+                <div className="rounded- px-5 py-4 flex items-center justify-between transition-all" style={{ background: isActive? (isLight? "#0a0a0a" : "#ffffff") : t.card }}>
+                  <div className="flex items-center gap-3.5">
+                    <div className="h-10 w-10 rounded-full flex items-center justify-center text- font-black border transition-transform group-hover:scale-105" style={{ background: isActive? (isLight? "#ffffff" : "#000000") : (isLight? "#0a0a0a" : "#ffffff"), color: isActive? (isLight? "#000000" : "#ffffff") : (isLight? "#ffffff" : "#000000"), borderColor: isActive? "transparent" : t.border, boxShadow: isActive? "0 6px 20px rgba(0,0,0,0.15)" : "none" }}>{s.icon}</div>
+                    <div><div className="flex items-center gap-2"><div className="text-[13.5px] font-semibold tracking-tight" style={{ color: isActive? (isLight? "#ffffff" : "#000000") : t.fg }}>{s.name}</div><div className={`h-1.5 w-1.5 rounded-full ${isActive? "bg-emerald-400 animate-pulse" : "bg-emerald-500/60"}`} /></div><div className="text- font-mono mt-0.5" style={{ color: isActive? (isLight? "rgba(255,255,255,0.55)" : "rgba(0,0,0,0.5)") : (isLight? "rgba(0,0,0,0.5)" : "rgba(255,255,255,0.4)") }}>{s.role}</div></div>
                   </div>
+                  <div className="flex items-center gap-3"><div className="hidden md:block w- h-1.5 rounded-full overflow-hidden" style={{ background: isActive? (isLight? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.1)") : (isLight? "rgba(0,0,0,0.08)" : "rgba(255,255,255,0.1)") }}><motion.div initial={{ width: 0 }} whileInView={{ width: `${s.level}%` }} viewport={{ once: true }} transition={{ duration: 1, delay: 0.2 + i*0.05 }} className="h-full rounded-full" style={{ background: isActive? (isLight? "#ffffff" : "#000000") : t.fg }} /></div><span className="font-mono text- min-w- text-right" style={{ color: isActive? (isLight? "#ffffff" : "#000000") : t.fg }}>{s.level}%</span></div>
                 </div>
-                <div className="flex items-center gap-4">
-                  <div className="hidden md:block w- h-1 rounded-full overflow-hidden bg-white/10"><motion.div initial={{ width: 0 }} animate={{ width: `${p.bar}%` }} transition={{ duration: 0.8, delay: i*0.05 }} className="h-full bg-white" /></div>
-                  <div className="font-mono text- w-8 text-right" style={{ color: active===i? "#fff" : "rgba(255,255,255,0.4)" }}>{p.metric}</div>
-                </div>
-              </button>
-            ))}
-          </div>
-          <div className="px-6 py-4 border-t font-mono text- space-y-1" style={{ borderColor: "rgba(255,255,255,0.08)", background: "rgba(0,0,0,0.3)" }}>
-            <div className="text-white/30">{`> deploying ${PIPELINE[active].name.toLowerCase()}...`}</div>
-            <div className="text-emerald-400">{`> ${PIPELINE[active].name.toLowerCase()} :: ${PIPELINE[active].role.toLowerCase()} • ready`}</div>
-            <div className="text-white/20">{`> 8 products • 1000+ users • $420/mo MRR`}</div>
-          </div>
-        </div>
-        <div className="grid grid-cols-1 gap-6">
-          <div className="rounded- border p-7" style={{ background: t.card, borderColor: t.border }}>
-            <div className="text- font-mono tracking-widest" style={{ color: isLight? "rgba(0,0,0,0.4)" : "rgba(255,255,255,0.35)" }}>PROOF — NOT PROMISES</div>
-            <div className="mt-6 grid grid-cols-3 gap-6">
-              <div><div className="text- font-black tracking-tight" style={{ color: t.fg }}>8</div><div className="text- font-mono mt-1" style={{ color: isLight? "rgba(0,0,0,0.45)" : "rgba(255,255,255,0.35)" }}>Products<br />shipped</div></div>
-              <div><div className="text- font-black tracking-tight" style={{ color: t.fg }}>1000+</div><div className="text- font-mono mt-1" style={{ color: isLight? "rgba(0,0,0,0.45)" : "rgba(255,255,255,0.35)" }}>Builders<br />mentored</div></div>
-              <div><div className="text- font-black tracking-tight text-emerald-500">99.9%</div><div className="text- font-mono mt-1" style={{ color: isLight? "rgba(0,0,0,0.45)" : "rgba(255,255,255,0.35)" }}>Uptime<br />last 90d</div></div>
-            </div>
-            <div className="mt-8 rounded- border p-4 font-mono text- leading-5" style={{ borderColor: t.border, background: isLight? "rgba(0,0,0,0.02)" : "rgba(255,255,255,0.03)", color: isLight? "rgba(0,0,0,0.5)" : "rgba(255,255,255,0.4)" }}>
-              <div>→ AcademiaBase: 2.3k users • AI research</div>
-              <div>→ RankEngine: 890 users • SEO infra</div>
-              <div>→ StudentPay: 1.2k users • Payments</div>
-            </div>
-          </div>
-          <div className="rounded- p-8 text-white" style={{ background: "#0a0a0a" }}>
-            <h3 className="text- font-black tracking-[-0.03em] leading-[0.9]">Let's ship<br />something real.</h3>
-            <p className="mt-3 text- leading-[1.5] text-white/50 max-w-">MVP, SEO, mentoring, or monetization — I'm in Lagos, shipping daily. Reply in &lt; 2h.</p>
-            <div className="mt-8 flex flex-col gap-3">
-              <a href="mailto:hello@oredola.dev" className="rounded-full bg-white text-black px-6 py-3.5 text-center text- font-semibold hover:opacity-90 transition">hello@oredola.dev →</a>
-              <a href="https://wa.me/234XXXXXXXX" className="rounded-full border border-white/15 text-white px-6 py-3.5 text-center text- font-semibold hover:bg-white/5 transition">WhatsApp — Fast reply</a>
-            </div>
-            <div className="mt-6 font-mono text- text-white/25">{time} • Available for freelance</div>
+              </motion.button>
+            )})}
+            <div className="mt-1 rounded- border p-4 flex items-center justify-between" style={{ background: isLight? "#0a0a0a" : "#ffffff", borderColor: isLight? "#0a0a0a" : "#ffffff", color: isLight? "#ffffff" : "#000000" }}><div className="text- font-medium">Lagos, NG • Reply in &lt;2h • Available for freelance</div><div className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" /></div>
           </div>
         </div>
       </div>
